@@ -37,8 +37,20 @@ public class playerControl : MonoBehaviour{
             // convert continous to discrete, if same cell then no movement
             Vector3Int cellPosition = gridLayout.WorldToCell(tempPosition);
             if(transform.position != gridLayout.CellToWorld(cellPosition)){
-                transform.position = gridLayout.CellToWorld(cellPosition);
-                availablePoint--;
+                
+                if(GetComponent<Collider2D>().IsTouchingLayers(LayerMask.GetMask("highLand"))){
+                    if((availablePoint - 2) >= 0){
+                        availablePoint -= 2;
+                        transform.position = gridLayout.CellToWorld(cellPosition);
+                    }
+
+                }else{
+                    // normal place
+                    transform.position = gridLayout.CellToWorld(cellPosition);
+                    availablePoint--;
+                }
+
+                tempPosition = transform.position;
                 updateAPtext();
             }
             if(availablePoint == 0){
@@ -67,5 +79,4 @@ public class playerControl : MonoBehaviour{
         canMove = false;
         destPosition = transform.position;
     }
-   
 }
