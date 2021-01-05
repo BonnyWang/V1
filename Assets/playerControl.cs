@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class playerControl : MonoBehaviour{
     Vector3 destPosition;
+    Vector3 a;
     Vector3 tempPosition;
     [SerializeField] float step;
     [SerializeField] int APRange;
@@ -29,7 +30,13 @@ public class playerControl : MonoBehaviour{
     void Update(){
         if(canMove){
             if(Input.GetButtonDown("Click")){
-                destPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                 a = Input.mousePosition;
+
+                destPosition = Camera.main.ScreenToWorldPoint(a);
+                print(destPosition.x);
+                print(destPosition.y);
+                print(a.x);
+                print(a.y);
             }
         
             tempPosition = Vector2.MoveTowards(tempPosition,destPosition, step);

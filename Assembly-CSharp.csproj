@@ -63,8 +63,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Grid.cs" />
+    <Compile Include="Assets\PathNode.cs" />
     <Compile Include="Assets\cameraControl.cs" />
+    <Compile Include="Assets\characterControl.cs" />
+    <Compile Include="Assets\highland.cs" />
     <Compile Include="Assets\playerControl.cs" />
+    <Compile Include="Assets\scripts\tilegenerate.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/AlexM/Documents/GitHub/V1/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
