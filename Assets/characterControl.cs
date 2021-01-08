@@ -20,9 +20,10 @@ public class characterControl : MonoBehaviour
     bool canMove =true;
     int availablePoint;
     GridLayout gridLayout;
-    [SerializeField] Text apText;
-    [SerializeField] Button restartButton;
-    [SerializeField] tilegenerate map;
+    CharacterStats CS;
+    public Text apText;
+    public Button restartButton;
+    public tilegenerate map;
     public Tilemap rMap;
     public Tile route;
     int width;
@@ -36,14 +37,24 @@ public class characterControl : MonoBehaviour
     void Start()
     {   
         gridLayout = transform.parent.GetComponentInParent<GridLayout>();
-        Debug.Log(("%f oh mama",x));
+        CS = GetComponent<CharacterStats>();
+        Debug.Log(string.Format("{0} is coming", CS.characterName));
+
+
+        //find everything
+        apText = GameObject.Find("Text").GetComponent<Text>();
+        restartButton = GameObject.Find("Button").GetComponent<Button>();
+        map = GameObject.Find("generateMap").GetComponent<tilegenerate>();
+        rMap = GameObject.Find("routeMap").GetComponent<Tilemap>();
+
+
         //placing x and y to initial point in formation and check availability
         width = map.tmpSize.x;
         height = map.tmpSize.y;
-        cellPosition = new Vector3Int(y,x, 0);
+        //cellPosition = new Vector3Int(y,x, 0);
 
-        //placing character
-        transform.position = gridLayout.CellToWorld(cellPosition);
+        //placing character(should be written at generate player)
+        //transform.position = gridLayout.CellToWorld(cellPosition);
     }
 
     // Update is called once per frame
@@ -63,7 +74,7 @@ public class characterControl : MonoBehaviour
                 //route made
                 //text
                 apText.text = (availablePoint, "-", APcost).ToString();
-            }k
+            }
             if(Input.GetButtonDown("Click") && isMoving == true)
             {
 
