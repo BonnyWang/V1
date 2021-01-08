@@ -40,18 +40,18 @@ public class CharacterStats : MonoBehaviour
 
     }
 
-    public void initializeProperty(string name,int air, int water, int fire, int ground, int plant, int soul)
+    public void initializeProperty(string name,int[] stats)
     {
         //initialize property with itemlist and six stats
-        this.air = air;
-        this.water = water;
-        this.fire = fire;
-        this.ground = ground;
-        this.plant = plant;
-        this.soul = soul;
+        this.air = stats[0];
+        this.water = stats[1];
+        this.fire = stats[2];
+        this.ground = stats[3];
+        this.plant = stats[4];
+        this.soul = stats[5];
         this.characterName = name;
 
         //calculation of different Stats
-
+        speed = plant;
     }
 }

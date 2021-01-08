@@ -5,20 +5,22 @@ using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using Microsoft.Win32.SafeHandles;
 using System;
+using System.Numerics;
 
 public class characterControl : MonoBehaviour
 {
     public int x = 5;
     public int y = 10;
     public bool isMoving = false;
-    Vector3 destPosition;
-    Vector3 tempPosition;
-    Vector3Int cellPosition;
+    UnityEngine.Vector3 destPosition;
+    UnityEngine.Vector3 tempPosition;
+    public Vector3Int cellPosition;
     Vector3Int targetPosition;
+    public bool autoEndTurn;
     [SerializeField] float step;
     [SerializeField] int APRange;
-    bool canMove =true;
-    int availablePoint;
+    public bool canMove =false;
+    public int availablePoint;
     GridLayout gridLayout;
     CharacterStats CS;
     public Text apText;
@@ -33,9 +35,15 @@ public class characterControl : MonoBehaviour
     private List<PathNode> closedList;
     private List<PathNode> path;
     public int APcost;
+    float clock = 0;
+    bool clockstart = false;
+    public bool urTurn = false;
+    public gameHandler GH;
+
     // Start is called before the first frame update
     void Start()
-    {   
+    {
+        availablePoint = 10;
         gridLayout = transform.parent.GetComponentInParent<GridLayout>();
         CS = GetComponent<CharacterStats>();
         Debug.Log(string.Format("{0} is coming", CS.characterName));
@@ -43,11 +51,13 @@ public class characterControl : MonoBehaviour
 
         //find everything
         apText = GameObject.Find("Text").GetComponent<Text>();
-        restartButton = GameObject.Find("Button").GetComponent<Button>();
+        
         map = GameObject.Find("generateMap").GetComponent<tilegenerate>();
         rMap = GameObject.Find("routeMap").GetComponent<Tilemap>();
+        GH = GameObject.Find("gameHandler").GetComponent<gameHandler>();
 
 
+        
         //placing x and y to initial point in formation and check availability
         width = map.tmpSize.x;
         height = map.tmpSize.y;
@@ -59,33 +69,82 @@ public class characterControl : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {   
+    {
 
-        if (canMove)
+        if(isMoving == false)
+        {
+            apText.text = availablePoint.ToString();
+        }
+        
+        
+
+        if (canMove && urTurn)
         {
             if (Input.GetButtonDown("Click") && isMoving==false)
             {
-                destPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                //print(destPosition);
-                targetPosition = gridLayout.WorldToCell(destPosition);
-                print(targetPosition);
+                gogogo();
 
-                pathFinding();
-                //route made
-                //text
-                apText.text = (availablePoint, "-", APcost).ToString();
             }
-            if(Input.GetButtonDown("Click") && isMoving == true)
+
+            else if(Input.GetButtonDown("Click") && isMoving == true)
             {
+                Vector3Int tempPos = gridLayout.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                if (tempPos == targetPosition)
+                {
+                    if (APcost > availablePoint)
+                    {
+                        Debug.Log("no ap!!!!!!!");
+                    }
+                    else
+                    {
+                        rMap.ClearAllTiles();
+
+                        if (path != null)
+                        {
+                            for (int i = 0; i < path.Count; i++)
+                            {
+                                //walk
+                                if (i > 0)
+                                {
+                                    //Debug.Log(string.Format("from {0},{1} to {2},{3}", path[i - 1].x, path[i - 1].y, path[i].x, path[i].y));
+                                }
+                                Vector3Int v = new Vector3Int(path[i].y, path[i].x, 0);
+                                transform.position = UnityEngine.Vector3.MoveTowards(transform.position, gridLayout.CellToWorld(v), 1);
+                                cellPosition = v;
+                            }
+                            Debug.Log("yeah!!!!!!!");
+
+                        }
+
+                        isMoving = false;
+                        availablePoint = availablePoint - APcost;
+                        apText.text = (availablePoint, " ap left").ToString();
+                    }
+                }
+                else
+                {
+                    rMap.ClearAllTiles();
+                    gogogo();
+                }
+
 
             }
 
-            
-
-
-            
-
+            else if (Input.GetButtonDown("LeftClick") && isMoving == true)
+            {
+                rMap.ClearAllTiles();
+                APcost = 0;
+                isMoving = false;
+            }
         }
+
+    }
+
+    IEnumerator Reset()
+    {
+        // your process
+        yield return new WaitForSeconds(1);
+        // continue process
     }
 
     void gernerateAP()
@@ -104,29 +163,53 @@ public class characterControl : MonoBehaviour
         canMove = true;
         gernerateAP();
     }
+    void gogogo()
+    {
+        destPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //print(destPosition);
+        targetPosition = gridLayout.WorldToCell(destPosition);
+        //print(targetPosition);
 
+        pathFinding();
+        //route made
+        //text
+
+        isMoving = true;
+        StartCoroutine("Reset");
+    }
     void endTurn()
     {
-        canMove = false;
-        destPosition = transform.position;
+
+        //end turn effect goes
+
+        //end turn
+        if (urTurn)
+        {
+            urTurn = false;
+            availablePoint = 10;
+            rMap.ClearAllTiles();
+            GH.next();
+        }
+
+        
     }
 
     void pathFinding()
     {
 
-        grid = new Grid<PathNode>(width, height, 10f, Vector3.zero, (Grid<PathNode> g, int x, int y) => new PathNode(g, x, y));
+        grid = new Grid<PathNode>(width, height, 10f, UnityEngine.Vector3.zero, (Grid<PathNode> g, int x, int y) => new PathNode(g, x, y));
 
-        Debug.Log(cellPosition.y);
-        Debug.Log(cellPosition.x);
-        Debug.Log(targetPosition.y);
-        Debug.Log(targetPosition.x);
+        //Debug.Log(cellPosition.y);
+        //Debug.Log(cellPosition.x);
+        //Debug.Log(targetPosition.y);
+        //Debug.Log(targetPosition.x);
         path = FindPath(cellPosition.y, cellPosition.x, targetPosition.y, targetPosition.x);
         if (path != null)
         {
             for(int i=0; i < path.Count; i++)
             {
                 //drawtile
-                Debug.Log((path[i].x,' ', path[i].y,' ', map.terrainMap[path[i].x, path[i].y]));
+                //Debug.Log((path[i].x,' ', path[i].y,' ', map.terrainMap[path[i].x, path[i].y]));
                 rMap.SetTile(new Vector3Int(path[i].y, path[i].x, 0), route);
             }
         }
@@ -169,7 +252,7 @@ public class characterControl : MonoBehaviour
             if(currentNode == endNode)
             {
                 APcost = currentNode.gCost;
-                print(("ap",APcost));
+                //print(("ap",APcost));
                 return CalculatePath(endNode);
             }
 

@@ -31,7 +31,7 @@ public class tilegenerate : MonoBehaviour
 
     public void Start()
     {
-        restartButton.onClick.AddListener(again);
+        //restartButton.onClick.AddListener(again);
         again();
     }
     public void again()

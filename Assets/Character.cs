@@ -8,12 +8,8 @@ public class Character : MonoBehaviour
     public int background;
 
     //property
-    public int air;
-    public int water;
-    public int fire;
-    public int ground;
-    public int plant;
-    public int soul;
+    public int[] stats;
+    //  air water fire ground plant soul
 
     //sprite
     public Sprite sprite;
@@ -21,14 +17,9 @@ public class Character : MonoBehaviour
     //item
     public int[] itemlist;
 
-    public Character(string name, int background, int air,int water,int fire,int ground,int plant,int soul,Sprite sprite)
+    public Character(string name, int background, int[] stats,Sprite sprite)
     {
-        this.air = air;
-        this.water = water;
-        this.fire = fire;
-        this.ground = ground;
-        this.plant = plant;
-        this.soul = soul;
+        this.stats = stats;
         this.characterName = name;
         this.background = background;
         this.sprite = sprite;
