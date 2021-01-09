@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Numerics;
+using UnityEngine.EventSystems;
 
 public class characterControl : MonoBehaviour
 {
@@ -57,7 +58,6 @@ public class characterControl : MonoBehaviour
         GH = GameObject.Find("gameHandler").GetComponent<gameHandler>();
 
 
-        
         //placing x and y to initial point in formation and check availability
         width = map.tmpSize.x;
         height = map.tmpSize.y;
@@ -65,13 +65,14 @@ public class characterControl : MonoBehaviour
 
         //placing character(should be written at generate player)
         //transform.position = gridLayout.CellToWorld(cellPosition);
+        map.updateFog();
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        if(isMoving == false)
+        if(isMoving == false && urTurn)
         {
             apText.text = availablePoint.ToString();
         }
@@ -80,7 +81,13 @@ public class characterControl : MonoBehaviour
 
         if (canMove && urTurn)
         {
-            if (Input.GetButtonDown("Click") && isMoving==false)
+            if (Input.GetButtonDown("Click")&& EventSystem.current.IsPointerOverGameObject())
+            {
+                //do nothing since it click on UI;
+            }
+            
+            
+            else if (Input.GetButtonDown("Click") && isMoving==false)
             {
                 gogogo();
 
@@ -111,8 +118,10 @@ public class characterControl : MonoBehaviour
                                 Vector3Int v = new Vector3Int(path[i].y, path[i].x, 0);
                                 transform.position = UnityEngine.Vector3.MoveTowards(transform.position, gridLayout.CellToWorld(v), 1);
                                 cellPosition = v;
+                                map.updateFog();
+                                Debug.Log("map updated");
                             }
-                            Debug.Log("yeah!!!!!!!");
+                            
 
                         }
 

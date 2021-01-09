@@ -42,7 +42,7 @@ public class generatePlayer : MonoBehaviour
         //placingCharacter(x，y);
         //Debug.Log(Mathf.RoundToInt(5 + (i - characters.Count / 2)));
         cellPosition = new Vector3Int(Mathf.RoundToInt(10+(i- characters.Count/2)), 5, 0);
-        //Debug.Log(cellPosition);
+        Debug.Log(cellPosition);
         Vector3 newPos = grid.GetComponent<Grid>().CellToWorld(cellPosition);
         //Debug.Log(newPos);
         var newcharacter = Instantiate(playerPrefab, newPos, Quaternion.identity, grid.transform);

@@ -20,7 +20,7 @@ public class cameraControl : MonoBehaviour{
     void Update(){
         hMove = Input.GetAxis("Horizontal")*step;
         vMove = Input.GetAxis("Vertical")*step;
-        mousehandle();
+        //mousehandle();
         zoomScroll();
 
 

@@ -19,19 +19,27 @@ public class tilegenerate : MonoBehaviour
     public int[,] terrainMap;
     public int[,] effectMap;
     public int[,] heightMap;
+    public int[,] visionMap;
 
     public Vector3Int tmpSize;
     public Tilemap tMap;
     public Tilemap eMap;
+    public Tilemap vMap;
     public Tile normalTile;
     public Tile mudTile;
+    public Tile viewedTile;
+    public Tile fogTile;
     [SerializeField] Button restartButton;
+    public List<GameObject> players;
+    public generatePlayer GP;
     int width;
     int height;
 
     public void Start()
     {
         //restartButton.onClick.AddListener(again);
+        GP = GameObject.Find("generatePlayer").GetComponent<generatePlayer>();
+        players = GP.players;
         again();
     }
     public void again()
@@ -59,6 +67,8 @@ public class tilegenerate : MonoBehaviour
                     tMap.SetTile(new Vector3Int(y, x, 0), mudTile);
                 }
 
+                vMap.SetTile(new Vector3Int(y, x, 0),fogTile);
+
             }
         }
     }
@@ -66,6 +76,7 @@ public class tilegenerate : MonoBehaviour
     public void generateMap()
     {
         terrainMap = new int[width, height];
+        visionMap = new int[width, height];
         for (int x = 0; x < width; x++)
         {
             for(int y = 0; y < height; y++)
@@ -86,20 +97,111 @@ public class tilegenerate : MonoBehaviour
                 //effectMap[x, y] = 0;
 
                 //height map
-                
+
+                //vision map
+                visionMap[x, y] = 0;
             }
         }
         Debug.Log("generated");
 
     }
 
-public void clearMap(bool complete)
+    public void clearMap(bool complete)
     {
         tMap.ClearAllTiles();
 
         if (complete)
         {
             tMap = null;
+        }
+    }
+
+    public  void updateFog()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (visionMap[x,y] == 1)
+                {
+                    //viewed
+                    visionMap[x,y] = 2;
+                }
+            }
+        }
+
+        //check player
+        for(int i = 0; i < players.Count; i++)
+        {
+            Vector3Int v = players[i].GetComponent<characterControl>().cellPosition;
+            int vp = Mathf.RoundToInt(players[i].GetComponent<CharacterStats>().view);
+            clearFog(v.y, v.x, vp);
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (visionMap[x, y] == 1)
+                {
+                    //view
+                    vMap.SetTile(new Vector3Int(y, x, 0), null);
+                }
+                else if (visionMap[x, y] == 2)
+                {
+                    //viewed
+                    vMap.SetTile(new Vector3Int(y, x, 0), viewedTile);
+                }
+                else if (visionMap[x, y] == 0)
+                {
+                    //unviewed
+                    vMap.SetTile(new Vector3Int(y, x, 0), fogTile);
+                }
+            }
+        }
+    }
+
+    void clearFog(int x, int y, int vp)
+    {
+        Debug.Log(x);
+        Debug.Log(y);
+        Debug.Log(vp);
+        int k = 0;
+        for (int j = 0; j < vp; j++)
+        {
+            if (((x + j - 1) % 2) == 1 && j>0)
+            {
+                k++;
+            }
+            for (int i = 0; i < vp * 2 - 1; i++)
+            {
+               
+                if (i>vp*2-2-j)
+                {
+                    //do nothing
+                }
+                else if(y - vp + k + i + 1 < height && y - vp + k + i + 1 > -1)
+                {
+                    Debug.Log(string.Format("({0},{1})  ready", x + j, y - vp + k + i - j));
+                    if (x + j < height)
+                    {
+                        visionMap[x + j, y - vp + k + i+1] = 1;
+                        Debug.Log(string.Format("({0},{1})  cleared", x + j, y - vp + k + i + 1));
+                    }
+                    if (x - j > -1)
+                    {
+                        visionMap[x - j, y - vp + k + i+1] = 1;
+                        Debug.Log(string.Format("({0},{1})  cleared", x - j, y - vp + k + i + 1));
+                    }
+
+                }
+
+                    
+                
+                
+
+            }
+            
         }
     }
 
