@@ -12,6 +12,10 @@ public class generatePlayer : MonoBehaviour
     public Sprite[] sprite;
     public List<GameObject> players;
 
+
+    //test
+    public List<Skill> bonny11;
+    public List<Skill> bonny21;
     Vector3Int cellPosition;
 
     void Start()
@@ -19,8 +23,12 @@ public class generatePlayer : MonoBehaviour
         //test
         int[] bonny1 = new int[] { 1, 2, 3, 4, 5, 6 };
         int[] bonny2 = new int[] { 10, 32, 33, 41, 54, 66 };
-        characters.Add(new Character("Bonny", 1, bonny1, sprite[0]));
-        characters.Add(new Character("Bonny2", 1, bonny2, sprite[1]));
+
+        bonny21.Add(new Skill("Bobobo!", 15, 10, 0.8f,1,4));
+        bonny11.Add(new Skill("SB！", 25, 15, 1f,2,4));
+        bonny21.Add(new Skill("SB！", 25, 15, 1f, 2,8));
+        characters.Add(new Character("Bonny", 1, bonny1, sprite[0],bonny11));
+        characters.Add(new Character("Bonny2", 1, bonny2, sprite[1],bonny21));
 
         grid = GameObject.Find("Grid");
         for (int i = 0; i < characters.Count; i++)
@@ -47,13 +55,23 @@ public class generatePlayer : MonoBehaviour
         //Debug.Log(newPos);
         var newcharacter = Instantiate(playerPrefab, newPos, Quaternion.identity, grid.transform);
         newcharacter.name=characters[i].characterName;
+
+        
+        
         players.Add(newcharacter);
         //change sprite
         newcharacter.GetComponent<SpriteRenderer>().sprite = sprite[i];
 
         //initialize stat
         CharacterStats CS = newcharacter.GetComponent<CharacterStats>();
-        CS.initializeProperty(characters[i].characterName, characters[i].stats);
+        CS.initializeProperty(characters[i].characterName, characters[i].stats, characters[i].sprite,characters[i].skillList);
+
+        //set skill to user
+        for (int j=0;j< characters[i].skillList.Count; j++)
+        {
+            characters[i].skillList[j].user = newcharacter;
+        }
+
         newcharacter.GetComponent<characterControl>().cellPosition = cellPosition;
     }
 

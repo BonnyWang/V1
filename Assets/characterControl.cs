@@ -7,6 +7,7 @@ using Microsoft.Win32.SafeHandles;
 using System;
 using System.Numerics;
 using UnityEngine.EventSystems;
+using UnityEngine.Windows.Speech;
 
 public class characterControl : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class characterControl : MonoBehaviour
     public Text apText;
     public Button restartButton;
     public tilegenerate map;
+    public skillList SL;
     public Tilemap rMap;
     public Tile route;
     int width;
@@ -39,7 +41,9 @@ public class characterControl : MonoBehaviour
     float clock = 0;
     bool clockstart = false;
     public bool urTurn = false;
+    public bool isDamaged = false;
     public gameHandler GH;
+    public GameObject heartbar;
 
     // Start is called before the first frame update
     void Start()
@@ -56,7 +60,8 @@ public class characterControl : MonoBehaviour
         map = GameObject.Find("generateMap").GetComponent<tilegenerate>();
         rMap = GameObject.Find("routeMap").GetComponent<Tilemap>();
         GH = GameObject.Find("gameHandler").GetComponent<gameHandler>();
-
+        SL = GameObject.Find("gameHandler").GetComponent<skillList>();
+        heartbar = GameObject.Find("heart");
 
         //placing x and y to initial point in formation and check availability
         width = map.tmpSize.x;
@@ -71,26 +76,56 @@ public class characterControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if(isMoving == false && urTurn)
-        {
-            apText.text = availablePoint.ToString();
+        if (isDamaged)
+        {   
+            //update health bar
+            heartbar.transform.localScale = new UnityEngine.Vector3(0.8f * CS.hpLeft / CS.hp, heartbar.transform.localScale.y, 1);
+            isDamaged = false;
         }
-        
-        
 
-        if (canMove && urTurn)
+        if(isMoving == false && urTurn && !(SL.isSkilling))
         {
+            
+            apText.text = string.Format("AP: {0}", availablePoint.ToString());
+            
+        }
+
+        if (isMoving == true && urTurn&& !(SL.isSkilling))
+        {
+            apText.text = string.Format("AP: {0}-{1}", availablePoint.ToString(),APcost.ToString());
+
+        }
+
+
+
+        if (canMove && urTurn && !(SL.isSkilling) )
+        {
+
+            
+
             if (Input.GetButtonDown("Click")&& EventSystem.current.IsPointerOverGameObject())
             {
                 //do nothing since it click on UI;
             }
             
             
-            else if (Input.GetButtonDown("Click") && isMoving==false)
+            else if (Input.GetButtonDown("Click") && isMoving==false && !(SL.dontMove))
             {
+                Debug.Log("u r a dumb");
                 gogogo();
 
+                //WAIT
+                if (SL.isSkilling)
+                {
+                    //SL.reClear();
+                }
+
+            }
+            else if(Input.GetButtonDown("Click") && isMoving == false && SL.dontMove)
+            {
+                //prevent click on target start moving
+                SL.dontMove = false;
+                //Debug.Log("i am a genius");
             }
 
             else if(Input.GetButtonDown("Click") && isMoving == true)
@@ -127,7 +162,8 @@ public class characterControl : MonoBehaviour
 
                         isMoving = false;
                         availablePoint = availablePoint - APcost;
-                        apText.text = (availablePoint, " ap left").ToString();
+                        //apText.text = string.Format("{0} AP left", availablePoint.ToString());
+                        
                     }
                 }
                 else
@@ -141,12 +177,19 @@ public class characterControl : MonoBehaviour
 
             else if (Input.GetButtonDown("LeftClick") && isMoving == true)
             {
-                rMap.ClearAllTiles();
-                APcost = 0;
-                isMoving = false;
+                resetControl();
             }
         }
 
+
+    }
+
+    public void resetControl()
+    {
+        Debug.Log("CS reset");
+        rMap.ClearAllTiles();
+        APcost = 0;
+        isMoving = false;
     }
 
     IEnumerator Reset()

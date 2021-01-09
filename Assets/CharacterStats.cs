@@ -15,6 +15,8 @@ public class CharacterStats : MonoBehaviour
     public int soul;
 
     public int[] itemlist;
+    public List<Skill> skilllist;
+    public Sprite sprite;
 
     //fight property
     public float skillAtk;
@@ -27,9 +29,10 @@ public class CharacterStats : MonoBehaviour
     public float strength;
     public float view;
     public float morale;
-    public float hp;
+    public int hp;
     public float ap;
     public float speed;
+    public int hpLeft;
 
 
 
@@ -40,7 +43,7 @@ public class CharacterStats : MonoBehaviour
 
     }
 
-    public void initializeProperty(string name,int[] stats)
+    public void initializeProperty(string name,int[] stats,Sprite a, List<Skill> skill)
     {
         //initialize property with itemlist and six stats
         this.air = stats[0];
@@ -50,7 +53,8 @@ public class CharacterStats : MonoBehaviour
         this.plant = stats[4];
         this.soul = stats[5];
         this.characterName = name;
-
+        this.sprite = a;
+        this.skilllist = skill;
         //calculation of different Stats
         //fire(meleeAtk and skillAtk)
         if (fire >= 0)
@@ -69,24 +73,24 @@ public class CharacterStats : MonoBehaviour
         if (water >= 0)
         {
             skillDef = water / (water + 100f);
-            stealth = -water * 0.1f;
+            stealth = -water * 0.001f;
         }
         else
         {
             skillDef = 0.25f*water / (0.25f*water + 100f);
-            stealth = -water * 0.5f;
+            stealth = -water * 0.005f;
         }
 
         //air range and acc
         if (air >= 0)
         {
             range = 1 + 0.01f * air;
-            acc = -air * 0.08f;
+            acc = -air * 0.0008f;
         }
         else
         {
             range = 1 - 0.0025f * air;
-            acc = -air * 0.4f;
+            acc = -air * 0.004f;
         }
 
         //ground meleeDef and strength
@@ -105,12 +109,14 @@ public class CharacterStats : MonoBehaviour
         speed = (plant + 100f) / 2f;
         if (plant >= 0)
         {
-            hp = 100f + plant;
+            hp = 100 + plant;
         }
         else
         {
-            hp = 100f + 0.25f * plant;
+            hp = Mathf.RoundToInt(100f + 0.25f * plant);
         }
+        // should change 
+        hpLeft = hp;
         
 
         //soul  view and morale

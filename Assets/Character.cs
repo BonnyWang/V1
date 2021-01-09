@@ -9,6 +9,7 @@ public class Character : MonoBehaviour
 
     //property
     public int[] stats;
+    public List<Skill>  skillList;
     //  air water fire ground plant soul
 
     //sprite
@@ -17,12 +18,13 @@ public class Character : MonoBehaviour
     //item
     public int[] itemlist;
 
-    public Character(string name, int background, int[] stats,Sprite sprite)
+    public Character(string name, int background, int[] stats,Sprite sprite, List<Skill>  skill)
     {
         this.stats = stats;
         this.characterName = name;
         this.background = background;
         this.sprite = sprite;
+        this.skillList = skill;
     }
 
     public Character(string name, int background, int quality)

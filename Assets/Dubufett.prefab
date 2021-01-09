@@ -71,7 +71,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 5b11d4545b66b634ea49cb581b9fe901, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -132,6 +132,7 @@ MonoBehaviour:
   plant: 0
   soul: 0
   itemlist: 
+  sprite: {fileID: 0}
   skillAtk: 0
   meleeAtk: 0
   skillDef: 0
@@ -145,3 +146,4 @@ MonoBehaviour:
   hp: 0
   ap: 0
   speed: 0
+  hpLeft: 0

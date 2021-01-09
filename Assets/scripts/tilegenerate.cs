@@ -25,10 +25,13 @@ public class tilegenerate : MonoBehaviour
     public Tilemap tMap;
     public Tilemap eMap;
     public Tilemap vMap;
+    public Tilemap sMap;
     public Tile normalTile;
     public Tile mudTile;
     public Tile viewedTile;
     public Tile fogTile;
+    public Tile skillrangeTile;
+    public Tile skilltargetTile;
     [SerializeField] Button restartButton;
     public List<GameObject> players;
     public generatePlayer GP;
@@ -163,9 +166,9 @@ public class tilegenerate : MonoBehaviour
 
     void clearFog(int x, int y, int vp)
     {
-        Debug.Log(x);
-        Debug.Log(y);
-        Debug.Log(vp);
+        //Debug.Log(x);
+        //Debug.Log(y);
+        //Debug.Log(vp);
         int k = 0;
         for (int j = 0; j < vp; j++)
         {
@@ -182,27 +185,55 @@ public class tilegenerate : MonoBehaviour
                 }
                 else if(y - vp + k + i + 1 < height && y - vp + k + i + 1 > -1)
                 {
-                    Debug.Log(string.Format("({0},{1})  ready", x + j, y - vp + k + i - j));
+                    //Debug.Log(string.Format("({0},{1})  ready", x + j, y - vp + k + i - j));
                     if (x + j < height)
                     {
                         visionMap[x + j, y - vp + k + i+1] = 1;
-                        Debug.Log(string.Format("({0},{1})  cleared", x + j, y - vp + k + i + 1));
+                       // Debug.Log(string.Format("({0},{1})  cleared", x + j, y - vp + k + i + 1));
                     }
                     if (x - j > -1)
                     {
                         visionMap[x - j, y - vp + k + i+1] = 1;
-                        Debug.Log(string.Format("({0},{1})  cleared", x - j, y - vp + k + i + 1));
+                        //Debug.Log(string.Format("({0},{1})  cleared", x - j, y - vp + k + i + 1));
                     }
-
                 }
-
-                    
-                
-                
-
-            }
-            
+            }         
         }
     }
 
+    
+    
+    public void updateSkill(int[,] skillMap)
+    {
+        Debug.Log("update skill");
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (skillMap[x, y] == 1)
+                {
+                    //view
+                    sMap.SetTile(new Vector3Int(y, x, 0), skillrangeTile);
+                }
+
+                else if (skillMap[x, y] == 0)
+                {
+                    //unviewed
+                    sMap.SetTile(new Vector3Int(y, x, 0), null);
+                }
+                else 
+                {
+                    //viewed
+                    sMap.SetTile(new Vector3Int(y, x, 0), skilltargetTile);
+                }
+            }
+        }
+    }
+
+    public void resetSMap()
+    {
+        Debug.Log("smap reset");
+        sMap.ClearAllTiles();
+
+    }
 }
